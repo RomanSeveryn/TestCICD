@@ -11,7 +11,7 @@ on:
       - development
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
 
     strategy:
@@ -33,6 +33,26 @@ jobs:
 
       - name: Run lint
         run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 18.x ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Run tests
         run: npm test
