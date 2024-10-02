@@ -11,20 +11,29 @@ on:
       - development
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
-    services:
-      # Service for running Android Emulator
-      docker:
-        image: circleci/android:api-30
-        options: --privileged
+    strategy:
+      matrix:
+        node-version: [18.x]
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-            node-version: 18.x
-            run: npm lint
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
 
